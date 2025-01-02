@@ -1,0 +1,12 @@
+<% content_for :title, "Editing exercise history" %>
+
+<h1>Editing exercise history</h1>
+
+<%= render "form", exercise_history: @exercise_history %>
+
+<br>
+
+<div>
+  <%= link_to "Show this exercise history", @exercise_history %> |
+  <%= link_to "Back to exercise histories", exercise_histories_path %>
+</div>

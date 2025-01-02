@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @exercise_history %>
+
+<div>
+  <%= link_to "Edit this exercise history", edit_exercise_history_path(@exercise_history) %> |
+  <%= link_to "Back to exercise histories", exercise_histories_path %>
+
+  <%= button_to "Destroy this exercise history", @exercise_history, method: :delete %>
+</div>

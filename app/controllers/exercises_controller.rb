@@ -57,7 +57,16 @@ class ExercisesController < ApplicationController
     end
   end
 
+  def complete
+    @exercise = Exercise.find(params[:exercise_id])
+    ExerciseHistory.create!(
+      exercise: @exercise,
+    )
+    redirect_to root_path, notice: "Exercise completed!"
+  end
+
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_exercise
       @exercise = Exercise.find(params.expect(:id))

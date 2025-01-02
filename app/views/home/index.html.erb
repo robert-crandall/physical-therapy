@@ -9,7 +9,10 @@
             <h5 class="card-title"><%= category.name %></h5>
             <% if exercise = category.next_exercise %>
               <p class="card-text">Next: <%= exercise.name %></p>
-              <%= link_to "Start", exercise_path(exercise), class: "btn btn-primary" %>
+              <%= button_to "Complete", 
+                exercise_complete_path(exercise), 
+                method: :post,
+                class: "btn btn-success" %>
             <% else %>
               <p class="card-text text-muted">No exercises yet</p>
             <% end %>
@@ -21,5 +24,6 @@
 
   <div class="text-center mt-4">
     <%= link_to "Settings", settings_path, class: "btn btn-secondary" %>
+    <%= link_to "History", exercise_histories_path, class: "btn btn-secondary" %>
   </div>
 </div>

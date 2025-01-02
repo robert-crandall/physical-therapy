@@ -2,7 +2,11 @@ Rails.application.routes.draw do
   root "home#index"
   get "settings", to: "settings#index"
 
-  resources :exercises
+  resources :exercises do
+    post "complete"
+  end
+  resources :exercise_histories
+
   resources :categories
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

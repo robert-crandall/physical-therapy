@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Exercise histories" %>
+
+<h1>Exercise histories</h1>
+
+<div id="exercise_histories">
+  <% @exercise_histories.each do |exercise_history| %>
+    <%= render exercise_history %>
+    <p>
+      <%= link_to "Show this exercise history", exercise_history %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New exercise history", new_exercise_history_path %>
