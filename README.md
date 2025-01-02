@@ -5,5 +5,6 @@
 ```
 rails generate scaffold Category name:string order:integer enabled:boolean quantity:integer
 rails generate scaffold Exercise name:string image:string link:string category:references lift_scheme:integer
+rails generate model ExerciseHistory exercise:references sets:integer reps:integer weight:integer success:boolean
 
 ```
