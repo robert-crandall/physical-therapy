@@ -7,14 +7,13 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title"><%= category.name %></h5>
-            <% if exercise = category.next_exercise %>
+            <% exercises = category.next_exercises %>
+            <% exercises.each do |exercise| %>
               <p class="card-text">Next: <%= exercise.name %></p>
               <%= button_to "Complete", 
                 exercise_complete_path(exercise), 
                 method: :post,
                 class: "btn btn-success" %>
-            <% else %>
-              <p class="card-text text-muted">No exercises yet</p>
             <% end %>
           </div>
         </div>
