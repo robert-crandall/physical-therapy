@@ -1,24 +1,9 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Database commands
 
-Things you may want to cover:
+```
+rails generate scaffold Category name:string order:integer enabled:boolean quantity:integer
+rails generate scaffold Exercise name:string image:string link:string category:references lift_scheme:integer
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```
