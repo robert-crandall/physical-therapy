@@ -26,10 +26,14 @@
     <%= form.text_field :link %>
   </div>
 
-  <div>
-    <%= form.label :category_id, style: "display: block" %>
-    <%= form.text_field :category_id %>
-  </div>
+<div>
+  <%= form.label :category_id, style: "display: block" %>
+  <%= form.collection_select :category_id, 
+                           Category.all, 
+                           :id, 
+                           :name,
+                           { prompt: "Select a category" } %>
+</div>
 
   <div>
     <%= form.label :lift_scheme, style: "display: block" %>
