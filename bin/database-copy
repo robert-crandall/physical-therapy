@@ -1,0 +1,22 @@
+#!/bin/bash
+
+src_dir=/Volumes/appdata/physical-therapy
+dest_dir=storage
+files=("production.sqlite3" "production.sqlite3-shm" "production.sqlite3-wal")
+
+# Check if the source files exist.
+for file in "${files[@]}"; do
+  src="$src_dir/$file"
+  if [ ! -f "$src" ]; then
+    echo "Source file $src does not exist. Have you mounted the share?"
+    exit 1
+  fi
+done
+
+# Copy the source files to the destination directory and rename them.
+for file in "${files[@]}"; do
+  src="$src_dir/$file"
+  dest="$dest_dir/${file/production/development}"
+  cp "$src" "$dest"
+  echo "Copied $src to $dest"
+done

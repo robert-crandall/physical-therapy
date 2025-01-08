@@ -13,6 +13,7 @@ class Category < ApplicationRecord
   private
 
   def remaining_quality
+    return 0 if quantity.nil? || quantity.zero?
     quantity - recently_completed_exercises.count
   end
 
