@@ -3,7 +3,8 @@ class ExercisesController < ApplicationController
 
   # GET /exercises or /exercises.json
   def index
-    @exercises = Exercise.all
+    @categories = Category.all
+    @exercises = Exercise.includes(:category).all
   end
 
   # GET /exercises/1 or /exercises/1.json
