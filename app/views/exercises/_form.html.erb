@@ -11,33 +11,37 @@
     </div>
   <% end %>
 
-  <div>
+  <div class="mb-3">
     <%= form.label :name, style: "display: block" %>
     <%= form.text_field :name %>
   </div>
 
-  <div>
+  <div class="mb-3">
     <%= form.label :image, style: "display: block" %>
     <%= form.text_field :image %>
   </div>
 
-  <div>
+  <div class="mb-3">
     <%= form.label :link, style: "display: block" %>
     <%= form.text_field :link %>
   </div>
 
-<div>
-  <%= form.label :category_id, style: "display: block" %>
-  <%= form.collection_select :category_id, 
-                           Category.all, 
-                           :id, 
+  <div class="mb-3">
+  <%= form.label :category_id, class: "form-label" %>
+  <%= form.collection_select :category_id,
+                           Category.all,
+                           :id,
                            :name,
-                           { prompt: "Select a category" } %>
+                           { prompt: "Select a category" },
+                           class: "form-select" %>
 </div>
 
-  <div>
+  <div class="mb-3">
     <%= form.label :lift_scheme, style: "display: block" %>
-    <%= form.number_field :lift_scheme %>
+    <%= form.select :lift_scheme,
+                  Exercise.lift_schemes.keys.map { |scheme| [scheme.titleize, scheme] },
+                  { prompt: "Select exercise scheme" },
+                  class: "form-select" %>
   </div>
 
   <div>
