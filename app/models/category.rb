@@ -18,7 +18,8 @@ class Category < ApplicationRecord
   end
 
   def recently_completed_exercises
-    exercise_history.where("created_at > ?", 2.hours.ago).limit(quantity)
+    show_exercises_after = Rails.env.development? ? 0.minutes.ago : 2.hours.ago
+    exercise_history.where("created_at > ?", show_exercises_after).limit(quantity)
   end
 
   def exercise_history
