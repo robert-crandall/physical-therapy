@@ -20,7 +20,7 @@ class ExercisesControllerTest < ActionDispatch::IntegrationTest
       post exercises_url, params: { exercise: { category_id: @exercise.category_id, image: @exercise.image, lift_scheme: @exercise.lift_scheme, link: @exercise.link, name: @exercise.name } }
     end
 
-    assert_redirected_to exercise_url(Exercise.last)
+    assert_redirected_to exercises_url
   end
 
   test "should show exercise" do
@@ -35,7 +35,7 @@ class ExercisesControllerTest < ActionDispatch::IntegrationTest
 
   test "should update exercise" do
     patch exercise_url(@exercise), params: { exercise: { category_id: @exercise.category_id, image: @exercise.image, lift_scheme: @exercise.lift_scheme, link: @exercise.link, name: @exercise.name } }
-    assert_redirected_to exercise_url(@exercise)
+    assert_redirected_to exercises_url
   end
 
   test "should destroy exercise" do
