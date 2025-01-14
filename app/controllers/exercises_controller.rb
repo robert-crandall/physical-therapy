@@ -64,62 +64,82 @@ class ExercisesController < ApplicationController
       @exercise.update!(weight: @exercise.weight + @exercise.progression)
     end
 
-    if completed_sequence_position.present?
+    begin
       ExerciseHistory.create!(
         exercise: @exercise,
-        sequence_position: completed_sequence_position,
+        sequence_position: completed_sequence_position || 0,
+        weight: weight,
+        success: true,
+        sets: sets,
+        reps: reps
       )
-    else
-      ExerciseHistory.create!(exercise: @exercise)
+
+      redirect_to root_path, notice: "Exercise completed successfully!"
+    rescue ActiveRecord::RecordInvalid => e
+      redirect_to root_path, alert: "Failed to save: #{e.record.errors.full_messages.join(', ')}"
+    rescue => e
+      redirect_to root_path, alert: "An error occurred: #{e.message}"
     end
-    redirect_to root_path, notice: "Exercise completed!"
   end
 
   private
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_exercise
-      @exercise = Exercise.find(params.expect(:id))
+  # Use callbacks to share common setup or constraints between actions.
+  def set_exercise
+    @exercise = Exercise.find(params.expect(:id))
+  end
+
+  def completed_sequence_position
+    return unless sequence
+
+    @completed_sequence_position ||= begin
+      current = @exercise.exercise_histories.last&.sequence_position || 0
+      (current + 1) % sequence.length
     end
+  end
 
-    def completed_sequence_position
-      return unless sequence
+  def progress_weight?
+    return false unless sequence && @exercise.weight&.positive? && @exercise.progression&.positive?
 
-      @completed_sequence_position ||= begin
-        current = @exercise.exercise_histories.last&.sequence_position || 0
-        (current + 1) % sequence.length
-      end
+    completed_sequence_position == 0
+  end
+
+  def sequence
+    return unless scheme && scheme[:sequence].present?
+
+    scheme[:sequence]
+  end
+
+  def scheme
+    return unless @exercise.lift_scheme.present? && @exercise.lift_scheme != "manual"
+
+    @scheme ||= ExerciseSchemes::SCHEMES[@exercise.lift_scheme.to_sym]
+  end
+
+  def sequence_position
+    return unless sequence
+
+    @sequence_position ||= begin
+      current = @exercise.exercise_histories.last&.sequence_position || 0
+      (current + 1) % sequence.length
     end
+  end
 
-    def progress_weight?
-      return false unless sequence
+  def sets
+    @exercise.sets || @exercise.calculated_total&.length || 0
+  end
 
-      completed_sequence_position == 0
-    end
+  def reps
+    @exercise.reps || @exercise.calculated_total&.last&.[](:reps) || 0
+  end
 
-    def sequence
-      return unless scheme && scheme[:sequence].present?
+  def weight
+    percentage = @exercise.calculated_total&.last&.[](:percentage) || 1
+    @exercise.calculate_weight(percentage)
+  end
 
-      scheme[:sequence]
-    end
-
-    def scheme
-      return unless @exercise.lift_scheme.present?
-
-      @scheme ||= ExerciseSchemes::SCHEMES[@exercise.lift_scheme.to_sym]
-    end
-
-    def sequence_position
-      return unless sequence
-
-      @sequence_position ||= begin
-        current = @exercise.exercise_histories.last&.sequence_position || 0
-        (current + 1) % sequence.length
-      end
-    end
-
-    # Only allow a list of trusted parameters through.
-    def exercise_params
-      params.require(:exercise).permit(:name, :image, :link, :category_id, :lift_scheme, :weight, :progression, :duration, :reps, :sets, :rest)
-    end
+  # Only allow a list of trusted parameters through.
+  def exercise_params
+    params.require(:exercise).permit(:name, :image, :link, :category_id, :lift_scheme, :weight, :progression, :duration, :reps, :sets, :rest, :description)
+  end
 end
