@@ -13,7 +13,7 @@
               class: "form-check-input",
               id: "set_#{i+1}_#{exercise.id}",
               data: { 
-                duration: exercise.duration,
+                duration: exercise.sleep_after_exercise_complete,
                 action: "change->timer#start" 
               } %>
             <%= f.label "set_#{i+1}", exercise.description, 
@@ -34,18 +34,6 @@
         <% end %>
       </div>
 
-      <% if exercise.reps %>
-        <div class="input-group mb-2">
-          <%= f.number_field :reps, 
-            class: "form-control", 
-            placeholder: "Reps", 
-            value: exercise.reps %>
-          <%= f.number_field :sets, 
-            class: "form-control", 
-            placeholder: "Sets", 
-            value: exercise.sets %>
-        </div>
-      <% end %>
       <%= f.submit "Complete with sets", class: "btn btn-success" %>
     <% end %>
   </div>

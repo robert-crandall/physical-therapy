@@ -5,7 +5,7 @@ module ExerciseSchemes
   included do
     enum :lift_scheme, {
       thirty_seconds_three_times: 0,
-      two_by_fifteen: 1
+      two_by_fifteen_no_rest: 1
     }
   end
 
@@ -13,12 +13,12 @@ module ExerciseSchemes
     thirty_seconds_three_times: {
       sets: 3,
       duration: 30,
-      rest: 30
+      rest: 0
     },
-    two_by_fifteen: {
+    two_by_fifteen_no_rest: {
       sets: 2,
       reps: 15,
-      rest: 60
+      rest: 0
     }
   }.freeze
 
@@ -53,6 +53,6 @@ module ExerciseSchemes
   end
 
   def sleep_after_exercise_complete
-    rest_time + duration
+    rest_time.to_i + duration.to_i
   end
 end
