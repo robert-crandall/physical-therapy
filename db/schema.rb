@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_14_010623) do
+ActiveRecord::Schema[8.0].define(version: 2025_01_14_023115) do
   create_table "categories", force: :cascade do |t|
     t.string "name"
     t.integer "order"
@@ -37,11 +37,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_14_010623) do
     t.string "image"
     t.string "link"
     t.integer "category_id", null: false
-    t.integer "lift_scheme"
+    t.integer "lift_scheme", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "weight"
     t.integer "progression"
+    t.integer "reps"
+    t.integer "sets"
+    t.integer "duration_seconds"
+    t.integer "rest_seconds"
     t.index ["category_id"], name: "index_exercises_on_category_id"
   end
 
