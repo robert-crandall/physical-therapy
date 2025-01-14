@@ -12,6 +12,10 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title"><%= exercise.name %></h5>
+                  <p class="card-text text-muted mb-3">
+                    <%= exercise.description %>
+                  </p>
+
                   <%= render 'complete_form', exercise: exercise %>
                 </div>
               </div>
