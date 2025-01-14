@@ -1,0 +1,89 @@
+<% if exercise.sets.to_i < 1 %>
+  <%= button_to "Complete", 
+    exercise_complete_path(exercise), 
+    method: :post,
+    class: "btn btn-success" %>
+<% else %>
+  <div class="exercise-form">
+    <%= form_with(url: exercise_complete_path(exercise), method: :post) do |f| %>
+      <div class="d-flex flex-column gap-2 mb-3">
+        <% exercise.sets.times do |i| %>
+          <div class="form-check">
+            <%= f.check_box "set_#{i+1}", 
+              class: "form-check-input",
+              id: "set_#{i+1}_#{exercise.id}",
+              data: { 
+                duration: exercise.duration,
+                action: "change->timer#start" 
+              } %>
+            <%= f.label "set_#{i+1}", exercise.description, 
+              class: "form-check-label" %>
+            
+            <div class="progress d-none" style="height: 20px;" id="progress_<%= i+1 %>_<%= exercise.id %>">
+              <div class="progress-bar" 
+                  role="progressbar" 
+                  style="width: 0%" 
+                  aria-valuenow="0" 
+                  aria-valuemin="0" 
+                  aria-valuemax="100">
+                0s
+              </div>
+            </div>
+            <small class="text-success d-none" id="ready_<%= i+1 %>_<%= exercise.id %>">Ready!</small>
+          </div>
+        <% end %>
+      </div>
+
+      <% if exercise.reps %>
+        <div class="input-group mb-2">
+          <%= f.number_field :reps, 
+            class: "form-control", 
+            placeholder: "Reps", 
+            value: exercise.reps %>
+          <%= f.number_field :sets, 
+            class: "form-control", 
+            placeholder: "Sets", 
+            value: exercise.sets %>
+        </div>
+      <% end %>
+      <%= f.submit "Complete with sets", class: "btn btn-success" %>
+    <% end %>
+  </div>
+<% end %>
+
+<%= javascript_tag do %>
+  document.addEventListener('change', (event) => {
+    if (event.target.matches('input[type="checkbox"]')) {
+      const duration = event.target.dataset.duration;
+      if (!duration) return;
+
+      const id = event.target.id;
+      const setNum = id.split('_')[1];
+      const exerciseId = id.split('_')[2];
+      const progressBar = document.getElementById(`progress_${setNum}_${exerciseId}`);
+      const progressBarInner = progressBar.querySelector('.progress-bar');
+      const readyText = document.getElementById(`ready_${setNum}_${exerciseId}`);
+      
+      if (event.target.checked) {
+        progressBar.classList.remove('d-none');
+        let elapsed = 0;
+        
+        const timer = setInterval(() => {
+          elapsed++;
+          const percent = (elapsed / duration) * 100;
+          progressBarInner.style.width = `${percent}%`;
+          progressBarInner.textContent = `${elapsed}s`;
+          
+          if (elapsed >= duration) {
+            clearInterval(timer);
+            readyText.classList.remove('d-none');
+            progressBar.classList.add('d-none');
+          }
+        }, 1000);
+      } else {
+        progressBar.classList.add('d-none');
+        readyText.classList.add('d-none');
+      }
+    }
+  });
+<% end %>
