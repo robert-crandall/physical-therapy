@@ -60,14 +60,15 @@ class ExercisesController < ApplicationController
 
   def complete
     @exercise = Exercise.find(params[:exercise_id])
+    if progress_weight?
+      @exercise.update!(weight: @exercise.weight + @exercise.progression)
+    end
+
     if completed_sequence_position.present?
       ExerciseHistory.create!(
         exercise: @exercise,
         sequence_position: completed_sequence_position,
       )
-      if progress_weight?
-        @exercise.update!(weight: @exercise.weight + @exercise.progression)
-      end
     else
       ExerciseHistory.create!(exercise: @exercise)
     end
@@ -93,7 +94,7 @@ class ExercisesController < ApplicationController
     def progress_weight?
       return false unless sequence
 
-      scheme[:sequence][completed_sequence_position][:increment_weight]
+      completed_sequence_position == 0
     end
 
     def sequence
@@ -119,6 +120,6 @@ class ExercisesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def exercise_params
-      params.require(:exercise).permit(:name, :image, :link, :category_id, :lift_scheme, :weight, :progression)
+      params.require(:exercise).permit(:name, :image, :link, :category_id, :lift_scheme, :weight, :progression, :duration, :reps, :sets, :rest)
     end
 end

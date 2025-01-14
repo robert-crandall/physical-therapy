@@ -36,23 +36,47 @@
                            class: "form-select" %>
 </div>
 
-  <div class="mb-3">
+  <div class="mb-3" data-controller="exercise-form">
     <%= form.label :lift_scheme, style: "display: block" %>
     <%= form.select :lift_scheme,
                   Exercise.lift_schemes.keys.map { |scheme| [scheme.titleize, scheme] },
                   { prompt: "Select exercise scheme" },
-                  class: "form-select" %>
-  </div>
+                  class: "form-select",
+                  data: { action: "change->exercise-form#toggleWeightFields" } %>
 
-  <div class="mb-3">
-    <%= form.label :weight, style: "display: block" %>
-    <%= form.text_field :weight %>
-  </div>
+    <div data-exercise-form-target="weightFields" class="<%= 'd-none' if form.object.manual? %>">
+      <div class="mb-3">
+        <%= form.label :weight, style: "display: block" %>
+        <%= form.number_field :weight, class: "form-control" %>
+      </div>
 
+      <div class="mb-3">
+        <%= form.label :progression, style: "display: block" %>
+        <%= form.number_field :progression, class: "form-control" %>
+      </div>
+    </div>
 
-  <div class="mb-3">
-    <%= form.label :progression, style: "display: block" %>
-    <%= form.text_field :progression %>
+    <div data-exercise-form-target="manualFields" class="<%= 'd-none' unless form.object.manual? %>">
+      <div class="mb-3">
+        <%= form.label :sets, style: "display: block" %>
+        <%= form.number_field :sets, class: "form-control" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :reps, style: "display: block" %>
+        <%= form.number_field :reps, class: "form-control" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :duration_seconds, style: "display: block" %>
+        <%= form.number_field :duration, class: "form-control" %>
+      </div>
+
+      <div class="mb-3">
+        <%= form.label :rest_seconds, style: "display: block" %>
+        <%= form.number_field :rest, class: "form-control" %>
+      </div>
+    </div>
   </div>
 
   <div>

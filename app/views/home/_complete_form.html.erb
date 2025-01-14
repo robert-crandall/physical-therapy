@@ -1,4 +1,4 @@
-<% if exercise.sets.to_i < 1 %>
+<% if exercise.calculated_total.length.to_i < 1 %>
   <%= button_to "Complete", 
     exercise_complete_path(exercise), 
     method: :post,
@@ -7,16 +7,16 @@
   <div class="exercise-form">
     <%= form_with(url: exercise_complete_path(exercise), method: :post) do |f| %>
       <div class="d-flex flex-column gap-2 mb-3">
-        <% exercise.sets.times do |i| %>
+        <% exercise.calculated_total.each_with_index do |set, i| %>
           <div class="form-check">
             <%= f.check_box "set_#{i+1}", 
               class: "form-check-input",
               id: "set_#{i+1}_#{exercise.id}",
               data: { 
-                duration: exercise.sleep_after_exercise_complete,
+                duration: exercise.rest_time,
                 action: "change->timer#start" 
               } %>
-            <%= f.label "set_#{i+1}", exercise.description, 
+            <%= f.label "set_#{i+1}", set[:description], 
               class: "form-check-label" %>
             
             <div class="progress d-none" style="height: 20px;" id="progress_<%= i+1 %>_<%= exercise.id %>">

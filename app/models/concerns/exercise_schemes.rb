@@ -4,43 +4,68 @@ module ExerciseSchemes
 
   included do
     enum :lift_scheme, {
-      thirty_seconds_three_times: 0,
-      two_by_fifteen_no_rest: 1,
-      three_by_five_linear: 2,
-      five_three_one: 3
+      manual: 0,
+      three_by_five_linear: 1,
+      five_three_one: 2
     }
   end
 
   SCHEMES = {
-    thirty_seconds_three_times: {
-      rest: 0,
-      weights: false,
-      sequence: [
-        { sets: 3, duration: 30 }
-      ]
-    },
-    two_by_fifteen_no_rest: {
-      rest: 0,
-      weights: false,
-      sequence: [
-        { sets: 2, reps: 15 }
-      ]
-    },
     three_by_five_linear: {
       rest: 90,
       weights: true,
       sequence: [
-        { sets: 3, reps: 5, increment_weight: true }
+        # Week 1
+        {
+          description: "3x5 linear",
+          lifts: [
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 }
+          ]
+        }
       ]
     },
     five_three_one: {
       weights: true,
       rest: 90,
       sequence: [
-        { sets: 3, reps: 5, description: "Week 1: 3x5", increment_weight: true },
-        { sets: 3, reps: 3, description: "Week 2: 3x3" },
-        { sets: 3, reps: 1, description: "Week 3: 3x1" },
-        { sets: 3, reps: 5, description: "Week 4: Deload 3x5" }
+        # Week 1
+        {
+          description: "Week 1: 3x5",
+          lifts: [
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 }
+          ]
+        },
+        # Week 2
+        {
+          description: "Week 2: 3x3",
+          lifts: [
+            { reps: 3, weight: 1 },
+            { reps: 3, weight: 1 },
+            { reps: 3, weight: 1 }
+          ]
+        },
+        # Week 3
+        {
+          description: "Week 3: 3x1",
+          lifts: [
+            { reps: 5, weight: 1 },
+            { reps: 3, weight: 1 },
+            { reps: 1, weight: 1 }
+          ]
+        },
+        # Week 4
+        {
+          description: "Week 4: Deload 3x5",
+          lifts: [
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 }
+          ]
+        }
       ]
     }
   }.freeze
@@ -52,7 +77,7 @@ module ExerciseSchemes
   end
 
   def current_sequence
-    return nil unless lift_scheme.present?
+    return nil if manual?
 
     @current_sequence ||= begin
       scheme = SCHEMES[lift_scheme.to_sym]
@@ -63,44 +88,43 @@ module ExerciseSchemes
 
   def current_sequence_description
     return nil unless current_sequence
+
     current_sequence[:description]
   end
 
-  def description
-    if duration.present?
-      "Hold for #{duration} seconds"
-    elsif reps.present?
-      if weights.present? && weights
-        "Perform #{reps} reps at #{self.weight} lbs"
-      else
-        "Perform #{reps} reps"
+  def calculated_total
+    total = []
+    if lift_scheme == "manual"
+      (sets || 0).times do |set|
+        description = duration.present? ? "Hold for #{duration} seconds" : "Perform #{reps} reps"
+        total << { reps: reps, description: description }
       end
     else
-      "Do something"
+      current_sequence[:lifts].each do |lift|
+        reps = lift[:reps]
+        if lift[:weight].nil?
+          description = "Scheme ##{lift_scheme} does not have a weight"
+        elsif weight.nil?
+          description = "Perform #{reps} reps"
+        else
+          description = "Perform #{reps} reps at #{calculate_weight(lift[:weight])} lbs"
+        end
+        total << { reps: reps, description: description }
+      end
     end
-  end
-
-  def weights
-    scheme&.[](:weights)
-  end
-
-  def sets
-    current_sequence&.[](:sets)
-  end
-
-  def reps
-    current_sequence&.[](:reps)
+    total
   end
 
   def rest_time
-    current_sequence&.[](:rest)
+    after_lift = rest || scheme&.fetch(:rest, 0)
+    during_lift = duration || scheme&.fetch(:duration, 0)
+    after_lift.to_i + during_lift.to_i
   end
 
-  def duration
-    current_sequence&.[](:duration)
-  end
+  ## Rounds calculated weight to the nearest 5 lbs
+  def calculate_weight(percentage)
+    return nil if weight.nil?
 
-  def sleep_after_exercise_complete
-    rest_time.to_i + duration.to_i
+    (weight * percentage / 5).round * 5
   end
 end
