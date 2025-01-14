@@ -37,7 +37,7 @@ module ExerciseSchemes
   end
 
   def current_sequence
-    return nil unless lift_scheme.present?
+    return nil if manual?
 
     @current_sequence ||= begin
       scheme = SCHEMES[lift_scheme.to_sym]
@@ -72,7 +72,7 @@ module ExerciseSchemes
   def calculated_total
     total = []
     if lift_scheme == "manual"
-      calculated_sets.each do |set|
+      calculated_sets.times do |set|
         total << { reps: calculated_reps }
       end
     else
@@ -82,19 +82,19 @@ module ExerciseSchemes
   end
 
   def calculated_sets
-    sets || current_sequence&.[](:sets)
+    sets || current_sequence&.[](:sets) || 0
   end
 
   def calculated_reps
-    reps || current_sequence&.[](:reps)
+    reps || current_sequence&.[](:reps) || 0
   end
 
   def calculated_rest_time
-    rest_time || current_sequence&.[](:rest_time)
+    rest || current_sequence&.[](:rest) || 0
   end
 
   def calculated_duration
-    duration || current_sequence&.[](:duration)
+    duration || current_sequence&.[](:duration) || 0
   end
 
   def sleep_after_exercise_complete
