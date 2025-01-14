@@ -9,7 +9,9 @@ class Exercise < ApplicationRecord
   private
 
   def duration_long_enough
-    if reps.present? && duration.present?
+    return unless duration.present?
+
+    if reps.present?
       errors.add(:base, "Cannot have both reps and duration. Choose reps if duration is less than 10 seconds.")
     end
 
