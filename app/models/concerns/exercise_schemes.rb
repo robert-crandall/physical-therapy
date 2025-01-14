@@ -19,6 +19,11 @@ module ExerciseSchemes
       sets: 2,
       reps: 15,
       rest: 0
+    },
+    three_by_five: {
+      sets: 3,
+      reps: 5,
+      rest: 90
     }
   }.freeze
 
