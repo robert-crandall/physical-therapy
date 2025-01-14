@@ -3,7 +3,7 @@ class ExercisesController < ApplicationController
 
   # GET /exercises or /exercises.json
   def index
-    @categories = Category.all
+    @categories = Category.order(:order)
     @exercises = Exercise.includes(:category).all
   end
 

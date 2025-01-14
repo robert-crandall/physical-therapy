@@ -1,28 +1,24 @@
 <div class="container mt-5">
-  <h1 class="text-center mb-4">Welcome to Workout App</h1>
-
-  <div class="row">
+  <div id="exercises" class="container mt-4">
     <% @categories.each do |category| %>
-      <div class="col-md-4 mb-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title"><%= category.name %></h5>
-            <% exercises = category.next_exercises %>
-            <% exercises.each do |exercise| %>
-              <p class="card-text">Next: <%= exercise.name %></p>
-              <%= button_to "Complete", 
-                exercise_complete_path(exercise), 
-                method: :post,
-                class: "btn btn-success" %>
-            <% end %>
-          </div>
+      <div class="category-section mb-4">
+        <h2 class="border-bottom pb-2 d-flex justify-content-between align-items-center">
+          <%= category.name %>
+        </h2>
+        
+        <div class="row">
+          <% category.next_exercises.each do |exercise| %>
+            <div class="col-md-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title"><%= exercise.name %></h5>
+                  <%= render 'complete_form', exercise: exercise %>
+                </div>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     <% end %>
-  </div>
-
-  <div class="text-center mt-4">
-    <%= link_to "Settings", exercises_path, class: "btn btn-secondary" %>
-    <%= link_to "History", exercise_histories_path, class: "btn btn-secondary" %>
   </div>
 </div>
