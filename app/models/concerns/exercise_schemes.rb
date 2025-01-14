@@ -19,9 +19,9 @@ module ExerciseSchemes
         {
           description: "3x5 linear",
           lifts: [
-            { reps: 5, weight: 1 },
-            { reps: 5, weight: 1 },
-            { reps: 5, weight: 1 }
+            { reps: 5, percentage: 0.85 },
+            { reps: 5, percentage: 0.85 },
+            { reps: 5, percentage: 0.85 }
           ]
         }
       ]
@@ -34,36 +34,36 @@ module ExerciseSchemes
         {
           description: "Week 1: 3x5",
           lifts: [
-            { reps: 5, weight: 1 },
-            { reps: 5, weight: 1 },
-            { reps: 5, weight: 1 }
+            { reps: 5, percentage: 0.65 },
+            { reps: 5, percentage: 0.75 },
+            { reps: 5, percentage: 0.85 }
           ]
         },
         # Week 2
         {
           description: "Week 2: 3x3",
           lifts: [
-            { reps: 3, weight: 1 },
-            { reps: 3, weight: 1 },
-            { reps: 3, weight: 1 }
+            { reps: 3, percentage: 0.70 },
+            { reps: 3, percentage: 0.80 },
+            { reps: 3, percentage: 0.90 }
           ]
         },
         # Week 3
         {
           description: "Week 3: 3x1",
           lifts: [
-            { reps: 5, weight: 1 },
-            { reps: 3, weight: 1 },
-            { reps: 1, weight: 1 }
+            { reps: 5, percentage: 0.75 },
+            { reps: 3, percentage: 0.85 },
+            { reps: 1, percentage: 0.95 }
           ]
         },
         # Week 4
         {
           description: "Week 4: Deload 3x5",
           lifts: [
-            { reps: 5, weight: 1 },
-            { reps: 5, weight: 1 },
-            { reps: 5, weight: 1 }
+            { reps: 5, percentage: 0.40 },
+            { reps: 5, percentage: 0.50 },
+            { reps: 5, percentage: 0.60 }
           ]
         }
       ]
@@ -86,33 +86,28 @@ module ExerciseSchemes
     end
   end
 
-  def current_sequence_description
-    return nil unless current_sequence
-
-    current_sequence[:description]
-  end
-
   def calculated_total
-    total = []
-    if lift_scheme == "manual"
-      (sets || 0).times do |set|
-        description = duration.present? ? "Hold for #{duration} seconds" : "Perform #{reps} reps"
-        total << { reps: reps, description: description }
-      end
-    else
-      current_sequence[:lifts].each do |lift|
-        reps = lift[:reps]
-        if lift[:weight].nil?
-          description = "Scheme ##{lift_scheme} does not have a weight"
-        elsif weight.nil?
-          description = "Perform #{reps} reps"
-        else
-          description = "Perform #{reps} reps at #{calculate_weight(lift[:weight])} lbs"
+    @calculated_total ||= begin
+      total = []
+      if lift_scheme == "manual"
+        (sets || 0).times do |set|
+          description = duration.present? ? "Hold for #{duration} seconds" : "Perform #{reps} reps"
+          total << { reps: reps, description: description }
         end
-        total << { reps: reps, description: description }
+      else
+        current_sequence[:lifts].each do |lift|
+          reps = lift[:reps]
+          percentage = lift[:percentage]
+          if weight.nil?
+            description = "Perform #{reps} reps"
+          else
+            description = "Perform #{reps} reps at #{calculate_weight(percentage)} lbs"
+          end
+          total << { reps: reps, percentage: percentage, description: description }
+        end
       end
+      total
     end
-    total
   end
 
   def rest_time
