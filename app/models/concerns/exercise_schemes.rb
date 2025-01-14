@@ -4,28 +4,13 @@ module ExerciseSchemes
 
   included do
     enum :lift_scheme, {
-      thirty_seconds_three_times: 0,
-      two_by_fifteen_no_rest: 1,
-      three_by_five_linear: 2,
-      five_three_one: 3
+      manual: 0,
+      three_by_five_linear: 1,
+      five_three_one: 2
     }
   end
 
   SCHEMES = {
-    thirty_seconds_three_times: {
-      rest: 0,
-      weights: false,
-      sequence: [
-        { sets: 3, duration: 30 }
-      ]
-    },
-    two_by_fifteen_no_rest: {
-      rest: 0,
-      weights: false,
-      sequence: [
-        { sets: 2, reps: 15 }
-      ]
-    },
     three_by_five_linear: {
       rest: 90,
       weights: true,
@@ -84,23 +69,35 @@ module ExerciseSchemes
     scheme&.[](:weights)
   end
 
-  def sets
-    current_sequence&.[](:sets)
+  def calculated_total
+    total = []
+    if lift_scheme == "manual"
+      calculated_sets.each do |set|
+        total << { reps: calculated_reps }
+      end
+    else
+      total << { reps: calculated_reps }
+    end
+    total
   end
 
-  def reps
-    current_sequence&.[](:reps)
+  def calculated_sets
+    sets || current_sequence&.[](:sets)
   end
 
-  def rest_time
-    current_sequence&.[](:rest)
+  def calculated_reps
+    reps || current_sequence&.[](:reps)
   end
 
-  def duration
-    current_sequence&.[](:duration)
+  def calculated_rest_time
+    rest_time || current_sequence&.[](:rest_time)
+  end
+
+  def calculated_duration
+    duration || current_sequence&.[](:duration)
   end
 
   def sleep_after_exercise_complete
-    rest_time.to_i + duration.to_i
+    calculated_rest_time.to_i + calculated_duration.to_i
   end
 end

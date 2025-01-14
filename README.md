@@ -9,4 +9,5 @@ rails generate model ExerciseHistory exercise:references sets:integer reps:integ
 rails generate scaffold_controller ExerciseHistory exercise:references sets:integer reps:integer weight:integer success:boolean
 rails generate migration AddSequencePositionToExerciseHistories sequence_position:integer
 rails generate migration AddWeightsToExercises weight:integer progression:integer
+rails generate migration AddRepsSetsToExercises reps:integer sets:integer duration:integer rest_seconds:integer
 ```

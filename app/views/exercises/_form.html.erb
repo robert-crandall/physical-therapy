@@ -44,16 +44,17 @@
                   class: "form-select" %>
   </div>
 
-  <div class="mb-3">
-    <%= form.label :weight, style: "display: block" %>
-    <%= form.text_field :weight %>
-  </div>
+  <% if form.object.lift_scheme != "manual" %>
+    <div class="mb-3">
+      <%= form.label :weight, style: "display: block" %>
+      <%= form.number_field :weight, class: "form-control" %>
+    </div>
 
-
-  <div class="mb-3">
-    <%= form.label :progression, style: "display: block" %>
-    <%= form.text_field :progression %>
-  </div>
+    <div class="mb-3">
+      <%= form.label :load_increase, style: "display: block" %>
+      <%= form.number_field :load_increase, class: "form-control" %>
+    </div>
+  <% end %>
 
   <div>
     <%= form.submit %>
