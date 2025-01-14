@@ -178,7 +178,6 @@ GEM
       activesupport (>= 7.0.0)
       rack
       railties (>= 7.0.0)
-    psych (3.3.4)
     puma (6.5.0)
       nio4r (~> 2.0)
     raabro (1.4.0)
@@ -331,7 +330,6 @@ DEPENDENCIES
   jbuilder
   kamal
   propshaft
-  psych (~> 3.0)
   puma (>= 5.0)
   rails (~> 8.0.1)
   rubocop-rails-omakase
