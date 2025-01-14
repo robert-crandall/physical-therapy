@@ -2,8 +2,8 @@ class AddRepsSetsToExercises < ActiveRecord::Migration[8.0]
   def change
     add_column :exercises, :reps, :integer
     add_column :exercises, :sets, :integer
-    add_column :exercises, :duration_seconds, :integer
-    add_column :exercises, :rest_seconds, :integer
+    add_column :exercises, :duration, :integer
+    add_column :exercises, :rest, :integer
 
     # First update existing records
     Exercise.where(lift_scheme: nil).update_all(lift_scheme: 0)

@@ -44,8 +44,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_14_023115) do
     t.integer "progression"
     t.integer "reps"
     t.integer "sets"
-    t.integer "duration_seconds"
-    t.integer "rest_seconds"
+    t.integer "duration"
+    t.integer "rest"
     t.index ["category_id"], name: "index_exercises_on_category_id"
   end
 
