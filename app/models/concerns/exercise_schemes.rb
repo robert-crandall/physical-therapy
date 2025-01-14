@@ -13,19 +13,27 @@ module ExerciseSchemes
     thirty_seconds_three_times: {
       sets: 3,
       duration: 30,
-      rest: 30,
-      description: "Hold for 30 seconds, repeat 3 times"
+      rest: 30
     },
     two_by_fifteen: {
       sets: 2,
       reps: 15,
-      rest: 60,
-      description: "2 sets of 15 reps"
+      rest: 60
     }
   }.freeze
 
   def scheme_properties
     SCHEMES[lift_scheme.to_sym] if lift_scheme.present?
+  end
+
+  def description
+    if duration.present?
+      "Hold for #{duration} seconds"
+    elsif reps.present?
+      "Perform #{reps} reps"
+    else
+      "Do something"
+    end
   end
 
   def sets
@@ -42,5 +50,9 @@ module ExerciseSchemes
 
   def duration
     scheme_properties&.[](:duration)
+  end
+
+  def sleep_after_exercise_complete
+    rest_time + duration
   end
 end
