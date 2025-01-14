@@ -60,9 +60,17 @@ class ExercisesController < ApplicationController
 
   def complete
     @exercise = Exercise.find(params[:exercise_id])
-    ExerciseHistory.create!(
-      exercise: @exercise,
-    )
+    if completed_sequence_position.present?
+      ExerciseHistory.create!(
+        exercise: @exercise,
+        sequence_position: completed_sequence_position,
+      )
+      if progress_weight?
+        @exercise.update!(weight: @exercise.weight + @exercise.progression)
+      end
+    else
+      ExerciseHistory.create!(exercise: @exercise)
+    end
     redirect_to root_path, notice: "Exercise completed!"
   end
 
@@ -71,6 +79,42 @@ class ExercisesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_exercise
       @exercise = Exercise.find(params.expect(:id))
+    end
+
+    def completed_sequence_position
+      return unless sequence
+
+      @completed_sequence_position ||= begin
+        current = @exercise.exercise_histories.last&.sequence_position || 0
+        (current + 1) % sequence.length
+      end
+    end
+
+    def progress_weight?
+      return false unless sequence
+
+      completed_sequence_position == sequence.length
+    end
+
+    def sequence
+      return unless scheme && scheme[:sequence].present?
+
+      scheme[:sequence]
+    end
+
+    def scheme
+      return unless @exercise.lift_scheme.present?
+
+      @scheme ||= ExerciseSchemes::SCHEMES[@exercise.lift_scheme.to_sym]
+    end
+
+    def sequence_position
+      return unless sequence
+
+      @sequence_position ||= begin
+        current = @exercise.exercise_histories.last&.sequence_position || 0
+        (current + 1) % sequence.length
+      end
     end
 
     # Only allow a list of trusted parameters through.
