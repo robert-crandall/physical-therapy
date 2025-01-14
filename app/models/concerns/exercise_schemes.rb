@@ -5,56 +5,99 @@ module ExerciseSchemes
   included do
     enum :lift_scheme, {
       thirty_seconds_three_times: 0,
-      two_by_fifteen_no_rest: 1
+      two_by_fifteen_no_rest: 1,
+      three_by_five_linear: 2,
+      five_three_one: 3
     }
   end
 
   SCHEMES = {
     thirty_seconds_three_times: {
-      sets: 3,
-      duration: 30,
-      rest: 0
+      rest: 0,
+      weights: false,
+      sequence: [
+        { sets: 3, duration: 30 }
+      ]
     },
     two_by_fifteen_no_rest: {
-      sets: 2,
-      reps: 15,
-      rest: 0
+      rest: 0,
+      weights: false,
+      sequence: [
+        { sets: 2, reps: 15 }
+      ]
     },
-    three_by_five: {
-      sets: 3,
-      reps: 5,
-      rest: 90
+    three_by_five_linear: {
+      rest: 90,
+      weights: true,
+      sequence: [
+        { sets: 3, reps: 5, increment_weight: true }
+      ]
+    },
+    five_three_one: {
+      weights: true,
+      rest: 90,
+      sequence: [
+        { sets: 3, reps: 5, description: "Week 1: 3x5", increment_weight: true },
+        { sets: 3, reps: 3, description: "Week 2: 3x3" },
+        { sets: 3, reps: 1, description: "Week 3: 3x1" },
+        { sets: 3, reps: 5, description: "Week 4: Deload 3x5" }
+      ]
     }
   }.freeze
 
-  def scheme_properties
-    SCHEMES[lift_scheme.to_sym] if lift_scheme.present?
+  def scheme
+    return nil unless lift_scheme.present?
+
+    @scheme ||= SCHEMES[lift_scheme.to_sym]
+  end
+
+  def current_sequence
+    return nil unless lift_scheme.present?
+
+    @current_sequence ||= begin
+      scheme = SCHEMES[lift_scheme.to_sym]
+      current_sequence = exercise_histories.last&.sequence_position || 0
+      scheme[:sequence][current_sequence % scheme[:sequence].length]
+    end
+  end
+
+  def current_sequence_description
+    return nil unless current_sequence
+    current_sequence[:description]
   end
 
   def description
     if duration.present?
       "Hold for #{duration} seconds"
     elsif reps.present?
-      "Perform #{reps} reps"
+      if weights.present? && weights
+        "Perform #{reps} reps at #{self.weight} lbs"
+      else
+        "Perform #{reps} reps"
+      end
     else
       "Do something"
     end
   end
 
+  def weights
+    scheme&.[](:weights)
+  end
+
   def sets
-    scheme_properties&.[](:sets)
+    current_sequence&.[](:sets)
   end
 
   def reps
-    scheme_properties&.[](:reps)
+    current_sequence&.[](:reps)
   end
 
   def rest_time
-    scheme_properties&.[](:rest)
+    current_sequence&.[](:rest)
   end
 
   def duration
-    scheme_properties&.[](:duration)
+    current_sequence&.[](:duration)
   end
 
   def sleep_after_exercise_complete

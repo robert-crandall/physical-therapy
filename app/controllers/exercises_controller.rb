@@ -93,7 +93,7 @@ class ExercisesController < ApplicationController
     def progress_weight?
       return false unless sequence
 
-      completed_sequence_position == sequence.length
+      scheme[:sequence][completed_sequence_position][:increment_weight]
     end
 
     def sequence
@@ -119,6 +119,6 @@ class ExercisesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def exercise_params
-      params.expect(exercise: [ :name, :image, :link, :category_id, :lift_scheme ])
+      params.expect(exercise: [ :name, :image, :link, :category_id, :lift_scheme, :weight, :progression ])
     end
 end
