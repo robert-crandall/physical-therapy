@@ -15,17 +15,57 @@ module ExerciseSchemes
       rest: 90,
       weights: true,
       sequence: [
-        { sets: 3, reps: 5, increment_weight: true }
+        # Week 1
+        {
+          description: "3x5 linear",
+          lifts: [
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 }
+          ]
+        }
       ]
     },
     five_three_one: {
       weights: true,
       rest: 90,
       sequence: [
-        { sets: 3, reps: 5, description: "Week 1: 3x5", increment_weight: true },
-        { sets: 3, reps: 3, description: "Week 2: 3x3" },
-        { sets: 3, reps: 1, description: "Week 3: 3x1" },
-        { sets: 3, reps: 5, description: "Week 4: Deload 3x5" }
+        # Week 1
+        {
+          description: "Week 1: 3x5",
+          lifts: [
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 }
+          ]
+        },
+        # Week 2
+        {
+          description: "Week 2: 3x3",
+          lifts: [
+            { reps: 3, weight: 1 },
+            { reps: 3, weight: 1 },
+            { reps: 3, weight: 1 }
+          ]
+        },
+        # Week 3
+        {
+          description: "Week 3: 3x1",
+          lifts: [
+            { reps: 5, weight: 1 },
+            { reps: 3, weight: 1 },
+            { reps: 1, weight: 1 }
+          ]
+        },
+        # Week 4
+        {
+          description: "Week 4: Deload 3x5",
+          lifts: [
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 },
+            { reps: 5, weight: 1 }
+          ]
+        }
       ]
     }
   }.freeze
@@ -48,56 +88,43 @@ module ExerciseSchemes
 
   def current_sequence_description
     return nil unless current_sequence
+
     current_sequence[:description]
-  end
-
-  def description
-    if duration.present?
-      "Hold for #{duration} seconds"
-    elsif reps.present?
-      if weights.present? && weights
-        "Perform #{reps} reps at #{self.weight} lbs"
-      else
-        "Perform #{reps} reps"
-      end
-    else
-      "Do something"
-    end
-  end
-
-  def weights
-    scheme&.[](:weights)
   end
 
   def calculated_total
     total = []
     if lift_scheme == "manual"
-      calculated_sets.times do |set|
-        total << { reps: calculated_reps }
+      (sets || 0).times do |set|
+        description = duration.present? ? "Hold for #{duration} seconds" : "Perform #{reps} reps"
+        total << { reps: reps, description: description }
       end
     else
-      total << { reps: calculated_reps }
+      current_sequence[:lifts].each do |lift|
+        reps = lift[:reps]
+        if lift[:weight].nil?
+          description = "Scheme ##{lift_scheme} does not have a weight"
+        elsif weight.nil?
+          description = "Perform #{reps} reps"
+        else
+          description = "Perform #{reps} reps at #{calculate_weight(lift[:weight])} lbs"
+        end
+        total << { reps: reps, description: description }
+      end
     end
     total
   end
 
-  def calculated_sets
-    sets || current_sequence&.[](:sets) || 0
+  def rest_time
+    after_lift = rest || scheme&.fetch(:rest, 0)
+    during_lift = duration || scheme&.fetch(:duration, 0)
+    after_lift.to_i + during_lift.to_i
   end
 
-  def calculated_reps
-    reps || current_sequence&.[](:reps) || 0
-  end
+  ## Rounds calculated weight to the nearest 5 lbs
+  def calculate_weight(percentage)
+    return nil if weight.nil?
 
-  def calculated_rest_time
-    rest || current_sequence&.[](:rest) || 0
-  end
-
-  def calculated_duration
-    duration || current_sequence&.[](:duration) || 0
-  end
-
-  def sleep_after_exercise_complete
-    calculated_rest_time.to_i + calculated_duration.to_i
+    (weight * percentage / 5).round * 5
   end
 end

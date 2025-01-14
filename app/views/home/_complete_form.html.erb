@@ -13,10 +13,10 @@
               class: "form-check-input",
               id: "set_#{i+1}_#{exercise.id}",
               data: { 
-                duration: exercise.sleep_after_exercise_complete,
+                duration: exercise.rest_time,
                 action: "change->timer#start" 
               } %>
-            <%= f.label "set_#{i+1}", exercise.description, 
+            <%= f.label "set_#{i+1}", set[:description], 
               class: "form-check-label" %>
             
             <div class="progress d-none" style="height: 20px;" id="progress_<%= i+1 %>_<%= exercise.id %>">
