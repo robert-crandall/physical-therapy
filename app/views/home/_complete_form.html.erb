@@ -4,7 +4,7 @@
     method: :post,
     class: "btn btn-success" %>
 <% else %>
-  <div class="exercise-form">
+  <div data-controller="timer">
     <%= form_with(url: exercise_complete_path(exercise), method: :post) do |f| %>
       <div class="d-flex flex-column gap-2 mb-3">
         <% exercise.calculated_total.each_with_index do |set, i| %>
@@ -13,6 +13,7 @@
               class: "form-check-input",
               id: "set_#{i+1}_#{exercise.id}",
               data: { 
+                timer_target: "checkbox",
                 duration: exercise.rest_time,
                 action: "change->timer#start" 
               } %>
@@ -37,45 +38,4 @@
       <%= f.submit "Complete", class: "btn btn-success" %>
     <% end %>
   </div>
-<% end %>
-
-<%= javascript_tag do %>
-  document.addEventListener('change', (event) => {
-    if (event.target.matches('input[type="checkbox"]')) {
-      const duration = event.target.dataset.duration;
-      if (!duration) return;
-
-      const id = event.target.id;
-      const setNum = id.split('_')[1];
-      const exerciseId = id.split('_')[2];
-      const progressBar = document.getElementById(`progress_${setNum}_${exerciseId}`);
-      const progressBarInner = progressBar.querySelector('.progress-bar');
-      const readyText = document.getElementById(`ready_${setNum}_${exerciseId}`);
-      
-      if (event.target.checked) {
-        progressBar.classList.remove('d-none');
-        const startTime = Date.now();
-        
-        const updateProgress = () => {
-          const elapsed = Math.floor((Date.now() - startTime) / 1000);
-          const percent = Math.min((elapsed / duration) * 100, 100);
-          
-          progressBarInner.style.width = `${percent}%`;
-          progressBarInner.textContent = `${elapsed}s`;
-          
-          if (elapsed >= duration) {
-            readyText.classList.remove('d-none');
-            progressBar.classList.add('d-none');
-          } else {
-            requestAnimationFrame(updateProgress);
-          }
-        };
-        
-        requestAnimationFrame(updateProgress);
-      } else {
-        progressBar.classList.add('d-none');
-        readyText.classList.add('d-none');
-      }
-    }
-  });
 <% end %>
