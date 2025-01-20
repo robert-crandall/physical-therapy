@@ -11,7 +11,9 @@ export default class extends Controller {
 
   start(event) {
     if (!event.target.checked) {
-      this.completedSets--
+      if (this.completedSets > 0) {
+        this.completedSets--
+      }
       return
     }
 
