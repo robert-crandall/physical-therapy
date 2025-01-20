@@ -4,7 +4,7 @@
     method: :post,
     class: "btn btn-success" %>
 <% else %>
-  <div class="exercise-form">
+  <div data-controller="timer">
     <%= form_with(url: exercise_complete_path(exercise), method: :post) do |f| %>
       <div class="d-flex flex-column gap-2 mb-3">
         <% exercise.calculated_total.each_with_index do |set, i| %>
@@ -13,11 +13,27 @@
               class: "form-check-input",
               id: "set_#{i+1}_#{exercise.id}",
               data: { 
+                timer_target: "checkbox",
                 duration: exercise.rest_time,
                 action: "change->timer#start" 
               } %>
             <%= f.label "set_#{i+1}", set[:description], 
               class: "form-check-label" %>
+
+            <% if set[:plates].present? %>
+              <div class="d-flex flex-row ms-2">
+                <% set[:plates].reverse.each_with_index do |plate, index| %>
+                  <div class="text-center mx-1">
+                    <span class="<%= plate_color_class(plate) %>">
+                      <%= plate %>
+                    </span>
+                  </div>
+                  <% if index < set[:plates].length - 1 %>
+                    <div class="border-end mx-1"></div>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
             
             <div class="progress d-none" style="height: 20px;" id="progress_<%= i+1 %>_<%= exercise.id %>">
               <div class="progress-bar" 
@@ -37,41 +53,4 @@
       <%= f.submit "Complete", class: "btn btn-success" %>
     <% end %>
   </div>
-<% end %>
-
-<%= javascript_tag do %>
-  document.addEventListener('change', (event) => {
-    if (event.target.matches('input[type="checkbox"]')) {
-      const duration = event.target.dataset.duration;
-      if (!duration) return;
-
-      const id = event.target.id;
-      const setNum = id.split('_')[1];
-      const exerciseId = id.split('_')[2];
-      const progressBar = document.getElementById(`progress_${setNum}_${exerciseId}`);
-      const progressBarInner = progressBar.querySelector('.progress-bar');
-      const readyText = document.getElementById(`ready_${setNum}_${exerciseId}`);
-      
-      if (event.target.checked) {
-        progressBar.classList.remove('d-none');
-        let elapsed = 0;
-        
-        const timer = setInterval(() => {
-          elapsed++;
-          const percent = (elapsed / duration) * 100;
-          progressBarInner.style.width = `${percent}%`;
-          progressBarInner.textContent = `${elapsed}s`;
-          
-          if (elapsed >= duration) {
-            clearInterval(timer);
-            readyText.classList.remove('d-none');
-            progressBar.classList.add('d-none');
-          }
-        }, 1000);
-      } else {
-        progressBar.classList.add('d-none');
-        readyText.classList.add('d-none');
-      }
-    }
-  });
 <% end %>
