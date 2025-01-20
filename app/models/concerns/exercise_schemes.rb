@@ -10,6 +10,9 @@ module ExerciseSchemes
     }
   end
 
+  BAR_WEIGHT = 45
+  WEIGHT_PLATES = [ 45, 25, 10, 5, 2.5 ].freeze
+
   SCHEMES = {
     three_by_five_linear: {
       rest: 90,
@@ -98,12 +101,13 @@ module ExerciseSchemes
         current_sequence[:lifts].each do |lift|
           reps = lift[:reps]
           percentage = lift[:percentage]
+          calculated_weight = calculate_weight(percentage)
           if weight.nil?
             description = "Perform #{reps} reps"
           else
             description = "Perform #{reps} reps at #{calculate_weight(percentage)} lbs"
           end
-          total << { reps: reps, percentage: percentage, description: description }
+          total << { reps: reps, percentage: percentage, description: description, weight: calculated_weight, plates: plates(calculated_weight) }
         end
       end
       total
@@ -115,6 +119,22 @@ module ExerciseSchemes
     during_lift = duration || scheme&.fetch(:duration, 0)
     after_lift.to_i + during_lift.to_i
   end
+
+  def plates(weight)
+    return [] if weight.nil?
+
+    remaining_weight = (weight.to_f - BAR_WEIGHT) / 2
+    plates = []
+    WEIGHT_PLATES.each do |plate|
+      while remaining_weight >= plate
+        plates << plate
+        remaining_weight -= plate
+      end
+    end
+    plates
+  end
+
+  private
 
   ## Rounds calculated weight to the nearest 5 lbs
   def calculate_weight(percentage)

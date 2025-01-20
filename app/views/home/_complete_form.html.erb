@@ -19,6 +19,21 @@
               } %>
             <%= f.label "set_#{i+1}", set[:description], 
               class: "form-check-label" %>
+
+            <% if set[:plates].present? %>
+              <div class="d-flex flex-row ms-2">
+                <% set[:plates].reverse.each_with_index do |plate, index| %>
+                  <div class="text-center mx-1">
+                    <span class="<%= plate_color_class(plate) %>">
+                      <%= plate %>
+                    </span>
+                  </div>
+                  <% if index < set[:plates].length - 1 %>
+                    <div class="border-end mx-1"></div>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
             
             <div class="progress d-none" style="height: 20px;" id="progress_<%= i+1 %>_<%= exercise.id %>">
               <div class="progress-bar" 

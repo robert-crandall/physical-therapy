@@ -134,8 +134,7 @@ class ExercisesController < ApplicationController
   end
 
   def weight
-    percentage = @exercise.calculated_total&.last&.[](:percentage) || 1
-    @exercise.calculate_weight(percentage)
+    @exercise.calculated_total&.last&.[](:weight) || 0
   end
 
   # Only allow a list of trusted parameters through.
