@@ -11,9 +11,7 @@ export default class extends Controller {
 
   start(event) {
     if (!event.target.checked) {
-      if (this.completedSets > 0) {
-        this.completedSets--
-      }
+      this.completedSets--
       return
     }
 
@@ -56,7 +54,7 @@ export default class extends Controller {
   }
 
   checkCompletion() {
-    if (this.completedSets === this.totalSets && this.activeTimers === 0) {
+    if (this.completedSets >= this.totalSets && this.activeTimers === 0) {
       this.element.querySelector('form').submit()
     }
   }
