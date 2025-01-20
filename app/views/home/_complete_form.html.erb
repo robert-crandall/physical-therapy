@@ -54,20 +54,24 @@
       
       if (event.target.checked) {
         progressBar.classList.remove('d-none');
-        let elapsed = 0;
+        const startTime = Date.now();
         
-        const timer = setInterval(() => {
-          elapsed++;
-          const percent = (elapsed / duration) * 100;
+        const updateProgress = () => {
+          const elapsed = Math.floor((Date.now() - startTime) / 1000);
+          const percent = Math.min((elapsed / duration) * 100, 100);
+          
           progressBarInner.style.width = `${percent}%`;
           progressBarInner.textContent = `${elapsed}s`;
           
           if (elapsed >= duration) {
-            clearInterval(timer);
             readyText.classList.remove('d-none');
             progressBar.classList.add('d-none');
+          } else {
+            requestAnimationFrame(updateProgress);
           }
-        }, 1000);
+        };
+        
+        requestAnimationFrame(updateProgress);
       } else {
         progressBar.classList.add('d-none');
         readyText.classList.add('d-none');
